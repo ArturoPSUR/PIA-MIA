@@ -70,23 +70,46 @@ class Dataset:
 
     def dividir(self, proporcion: float = 0.8, semilla: int = 42):
         """Baraja y parte en entrenamiento y prueba de forma reproducible."""
-        muestras=self.muestras
+        muestras=list(self.muestras)
         random.Random(semilla).shuffle(muestras) # Esta línea baraja la lista de muestras        ...
-        limite=
+        limite= int(len(muestras)*proporcion)
         
         entrenamiento=muestras[:limite]
         validacion=muestras[limite:]
         
-        ...
+        return Dataset(entrenamiento), Dataset(validacion)
 
     def rangos(self) -> list[tuple[float, float]]:
         """Mínimo y máximo de cada característica."""
-        [(,),(,),(,),(,)]
+        resultado = []
+        num_caracteristicas = len(MEDIDAS)
+
+        for i in range (num_caracteristicas):
+            valores = [m.medidas[i] for m in self.muestras]
+            minimo= min(valores)
+            maximo= max(valores)
+            resultado.append((minimo,maximo))
+
+        return resultado
         
 
     def normalizar(self, rangos: list[tuple[float, float]]) -> "Dataset":
         """Escala cada característica al rango 0-1 con los rangos dados."""
-        ...
+        muestrasNormalizadas=[]
+
+        for m in self.muestras:
+            nuevasMedidas = []
+            for i in range(len(m.medidas)):
+                vMin, vMax = rangos[i]
+                if vMax - vMin == 0:
+                    v_norm = 0.0
+                else:
+                    v_norm = (m.medidas[i] - vMin) / (vMax - vMin)
+                nuevasMedidas.append(v_norm)
+                
+            muestrasNormalizadas.append(Muestra(medidas=nuevasMedidas, clase=m.clase))
+            
+        return Dataset(muestrasNormalizadas)
 
     def resumen_por_clase(self) -> dict[str, dict[str, float]]:
         """Estadísticas básicas por clase (reutiliza el proyecto 1)."""
@@ -157,15 +180,17 @@ class ClasificadorKNN(Modelo):
 
     @staticmethod
     def distancia(a: list[float], b: list[float]) -> float:
-        ...
-#
+        return sum((x-y) ** 2 for x, y in zip(a,b)) ** 0.5
+
     def _votar(self, muestra: Muestra) -> str:
         vecinos = sorted(
             self._entrenamiento,
             key=lambda m: self.distancia(muestra.medidas, m.medidas),
         )[: self.k]
-        ...
-#
+        
+        voto = Counter(v.clase for v in vecinos).most_common(1)[0][0]
+        return voto
+
     def predecir(self, muestras) -> list[str]:
         if self._entrenamiento is None:
             raise RuntimeError("El modelo no está entrenado")

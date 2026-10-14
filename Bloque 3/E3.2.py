@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 RUTA= Path(__file__).parent / "iris.csv"
-MEDIDAS= ['largo_sep'],['ancho_sep'],['largo_pet'],['ancho_pet']
+MEDIDAS = ["largo_sep", "ancho_sep", "largo_pet", "ancho_pet"]
 
 
 with open(RUTA, newline="") as f:
@@ -20,12 +20,12 @@ def obtener_media_columna(filas,columna):
         if clase not in valores:
             valores[clase]=[]
         valores[clase].append(fila[columna])
-    print(valores)
+    #print(valores)
 
     resultados={}
     for clase,v in valores.items():
         resultados[clase]=round(sum(v)/len(v),2)
-    print(resultados)
+    #print(resultados)
     
     return resultados
 
@@ -33,3 +33,11 @@ def obtener_media_columna(filas,columna):
 for fila in filas:
     for medida in MEDIDAS:
         fila[medida]=float(fila[medida])
+
+
+print("Medias por clase: ")
+for medida in MEDIDAS:
+    medias = obtener_media_columna(filas, medida)
+    print(f"\nMedida: {medida}")
+    for clase, media in medias.items():
+        print(f"{clase}: {media}")

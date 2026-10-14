@@ -4,20 +4,20 @@
 class CuentaBancaria:
     def __init__(self, titular, saldo=0.0):
         self.titular = titular
-        self.saldo = saldo
+        self._saldo = saldo
 
     @property
     def saldo(self):
-        return self.saldo
+        return self._saldo
     
     def ingresar(self,cantidad):
-        self.saldo= self.saldo+cantidad
+        self._saldo= self._saldo+cantidad
 
     def retirar(self,cantidad):
-        if cantidad<=self.saldo:
-            self.saldo= self.saldo-cantidad
+        if cantidad<=self._saldo:
+            self._saldo= self._saldo-cantidad
         else:
             print("No se puede retirar una cantidad mayor al saldo actual")
 
 CuentaBancaria1= CuentaBancaria("titular")
-print(CuentaBancaria.saldo)            
+print(CuentaBancaria1.saldo)            
